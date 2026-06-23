@@ -47,11 +47,12 @@
             box-shadow: 0 0 25px rgba(56, 19, 194, 0.4);
         }
 
+        /* Камера теперь на canvas — это правильно для Teachable Machine */
         #webcam {
             display: block;
             width: 320px;
             height: 240px;
-            object-fit: cover;
+            border-radius: 12px;
             transform: scaleX(-1); /* Зеркальное отображение */
         }
 
@@ -290,9 +291,9 @@
         <span class="spinner"></span> Загрузка модели ИИ...
     </div>
 
-    <!-- Область камеры -->
+    <!-- Область камеры (теперь canvas — правильно для Teachable Machine) -->
     <div id="camera-container">
-        <video id="webcam" autoplay playsinline muted></video>
+        <canvas id="webcam" width="320" height="240"></canvas>
         <div id="countdown-overlay"></div>
     </div>
 
@@ -376,12 +377,10 @@
                 model = await tmImage.load(modelURL, metadataURL);
 
                 // Инициализируем веб-камеру
+                // Передаём наш canvas как target — Teachable Machine сам будет рисовать на нём
                 webcam = new tmImage.Webcam(320, 240, true); // ширина, высота, flipX (зеркало)
-                await webcam.setup();
+                await webcam.setup(document.getElementById('webcam'));
                 await webcam.play();
-
-                // Помещаем видео с камеры в DOM
-                document.getElementById('webcam').srcObject = webcam.canvas;
 
                 // Скрываем индикатор загрузки и активируем кнопку
                 loadingEl.style.display = 'none';
